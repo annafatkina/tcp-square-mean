@@ -39,12 +39,12 @@ void Dumper::dump(std::deque<std::string>& dumpQueue)
 // public
 Dumper::Dumper(const std::string& filename)
     : dumpFilename_(filename)
+    , shutdown_(false)
 {
 }
 
 void Dumper::push(const std::string& string)
 {
-    std::cout << "push\n";
     std::unique_lock<std::mutex> locker(dumpMsgQueueMutex_);
     dumpMsgQueue_.emplace_back(string);
 }
@@ -57,7 +57,6 @@ void Dumper::start()
 
 void Dumper::initDump()
 {
-    std::cout << "initDump\n";
     dumpCV_.notify_one();
 }
 

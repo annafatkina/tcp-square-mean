@@ -27,8 +27,9 @@ void Logger::processLogQueue()
 void Logger::sheduleDumpRecurring()
 {
     dumper_->initDump();
+    auto self = shared_from_this();
     dumpTimer_.expires_at(dumpTimer_.expires_at() + boost::posix_time::seconds(dumpPeriodSeconds_));
-    dumpTimer_.async_wait(std::bind(&Logger::sheduleDumpRecurring, this));
+    dumpTimer_.async_wait([self](const boost::system::error_code&) { self->sheduleDumpRecurring(); });
 }
 
 // public
@@ -46,7 +47,10 @@ void Logger::run()
 {
     isRunning_ = true;
 
-    dumpTimer_.async_wait(std::bind(&Logger::sheduleDumpRecurring, this));
+    auto self = shared_from_this();
+    dumpTimer_.async_wait([self](const boost::system::error_code&) {
+        self->sheduleDumpRecurring();
+        });
 
     while (isRunning_) {
         try {
@@ -55,4 +59,11 @@ void Logger::run()
             std::cout << "Error while loggng: " << e.what();
         }
     }
+}
+
+    void Logger::stop()
+{
+    isRunning_ = false;
+    dumpTimer_.cancel();
+    dumper_->stop();
 }

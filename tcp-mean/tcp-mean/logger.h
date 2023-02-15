@@ -10,7 +10,7 @@
 
 #include "dumper.h"
 
-class Logger {
+class Logger : public std::enable_shared_from_this<Logger> {
     enum class Level {
         ALL = 0, // print all logs: errors, warnings, info and debug
         INFO, // print error, warnings, and info logs only
@@ -19,14 +19,12 @@ class Logger {
     };
 
     std::shared_ptr<Dumper> dumper_;
-
     std::mutex logMsgQueueMutex_;
     std::deque<std::string> logMsgQueue_;
     Level logLevel_;
     std::atomic_bool isRunning_;
     int dumpPeriodSeconds_;
     boost::asio::deadline_timer dumpTimer_;
-
 
     // Push the specified 'msg' into log message queue.
     void push(const std::string& msg);
@@ -48,6 +46,7 @@ class Logger {
     template <typename T, typename... Types>
     std::string toString(T arg, Types... args);
 
+    // Schedule dump to log file once per period specified in ctor.
     void sheduleDumpRecurring();
 
 public:
@@ -62,11 +61,7 @@ public:
     void run();
 
     // Stop logger.
-    void stop() {
-        isRunning_ = false;
-        dumpTimer_.cancel();
-        dumper_->stop();
-    }
+    void stop();
 
     // Add the specified 'msg' info level log to output. If log level is more
     // strict than 'INFO', ighnore it.
