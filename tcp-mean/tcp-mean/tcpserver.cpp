@@ -49,7 +49,7 @@ TcpServer::TcpServer(short port, SessionFactoryFunc sessionFactoryFunc)
     , sessionFactory_(sessionFactoryFunc)
     , computer_(createMeanComputer(1023))
     , num_threads_(std::thread::hardware_concurrency() - 1)
-    , logger_(std::make_shared<Logger>("temp.txt")) {
+    , logger_(std::make_shared<Logger>(context_,"temp.txt", 1)) {
 
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,

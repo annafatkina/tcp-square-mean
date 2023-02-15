@@ -70,6 +70,7 @@ Session::handle() {
     if (s.size() == 0) {
         logger_->printWarning("No data received and no line break reched.");
     }
+    logger_->print("Received data: ", s);
 
     double res;
     try {
