@@ -20,6 +20,7 @@ class Client {
     boost::asio::streambuf  buffer_;
     Logger                  logger_;
     int                     maxNumber_;
+    boost::asio::signal_set signals_;
     std::atomic_bool        isRunnting_;
 
     // Send the specified 'number' to the server.

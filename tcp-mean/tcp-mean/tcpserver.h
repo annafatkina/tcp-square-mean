@@ -5,6 +5,7 @@
 #include "isession.h"
 #include "logger.h"
 #include "numberdumper.h"
+#include <atomic>
 #include <boost/asio.hpp>
 
 class TcpServer {
@@ -32,6 +33,7 @@ class TcpServer {
     std::shared_ptr<Logger>                   logger_;
     std::shared_ptr<std::thread>              loggerThread_;
     std::shared_ptr<IComputer>                computer_;
+    std::atomic_bool                          isRunning_;
 
     // Accept new connection
     void do_accept();

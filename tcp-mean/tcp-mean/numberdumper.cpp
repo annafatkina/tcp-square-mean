@@ -52,6 +52,7 @@ void NumberDumper::start() {
 }
 
 void NumberDumper::stop() {
+    shutdown_ = true;
     dumpCV_.notify_one();
     dumpTimer_.cancel();
     dumpThread_.join();

@@ -16,14 +16,20 @@ host = "localhost"
 port = "1234"
 server = args.path + "tcp-mean-server.exe "
 client = args.path + "tcp-mean-client.exe "
+logfolder = "log/"
+
+isExist = os.path.exists(logfolder)
+if not isExist:
+   # Create a new directory because it does not exist
+   os.makedirs(logfolder)
 
 # Run the server
-subprocess.Popen(args = [server, port, args.logserver, args.dumpfile, args.maxnumber])
+subprocess.Popen(args = [server, port, logfolder + args.logserver, logfolder + args.dumpfile, args.maxnumber])
 
 for i in range(9):
     # Run some clients
-    subprocess.Popen(args = [client, host, port, str(i) + args.logclient, args.maxnumber])
+    subprocess.Popen(args = [client, host, port, logfolder + str(i) + args.logclient, args.maxnumber])
 
 # Let's add a client who sends incorrect values
-subprocess.Popen(args = [client, host, port, '10' + args.logclient, str(int(args.maxnumber)+10)])
+subprocess.Popen(args = [client, host, port, logfolder + 'wrong' + args.logclient, str(int(args.maxnumber)+10)])
 

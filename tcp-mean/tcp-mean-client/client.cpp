@@ -1,4 +1,7 @@
 #include "client.h"
+#include <boost/bind.hpp>
+#include <boost/random.hpp>
+#include <string>
 
 void Client::send(int number) {
     std::string randNum = std::to_string(number);
@@ -29,23 +32,47 @@ Client::Client(const std::string &host, const std::string &port,
     , buffer_(32)
     , logger_(logFilename)
     , maxNumber_(maxNumber)
+    , signals_(io_context_)
     , isRunnting_(false) {
+    signals_.add(SIGINT);
+    signals_.add(SIGTERM);
+#if defined(SIGQUIT)
+    signals_.add(SIGQUIT);
+#endif // defined(SIGQUIT)
+
+    signals_.async_wait(boost::bind(&Client::stop, this));
     logger_.run();
 }
 
 void Client::run() {
+    logger_.print("Run the client.");
     boost::asio::connect(socket_, resolver_.resolve(host_, port_));
     logger_.run();
     isRunnting_ = true;
     while (isRunnting_) {
-        std::srand(std::time(0));
-        int randNum = std::rand() % maxNumber_;
-        send(randNum);
-        recv();
+        boost::random::mt19937                    rng;
+        boost::random::uniform_int_distribution<> gen(0, maxNumber_);
+        int                                       randNum = gen(rng);
+        try {
+            send(randNum);
+        } catch (const std::exception &e) {
+            logger_.print("ERROR: can't write data, " + std::string(e.what()) +
+                          " closing...");
+            stop();
+        }
+
+        try {
+            recv();
+        } catch (const std::exception &e) {
+            logger_.print("ERROR: can't read data, " + std::string(e.what()) +
+                          " closing...");
+            stop();
+        }
     }
 }
 
 void Client::stop() {
+    logger_.print("Shutdown the client.");
     isRunnting_ = false;
     logger_.stop();
 }

@@ -38,6 +38,7 @@ void TcpServer::run() {
             boost::bind(&boost::asio::io_context::run, &context_));
         threads_.emplace_back(std::move(t));
     }
+    isRunning_ = true;
 }
 
 TcpServer::TcpServer(short port, const std::string &logFilename,
@@ -55,7 +56,7 @@ TcpServer::TcpServer(short port, const std::string &logFilename,
                        ? std::thread::hardware_concurrency() - 2
                        : 1)
     , logger_(std::make_shared<Logger>(context_, logFilename, 1))
-    , computer_(createMeanComputer(numberDumper_, logger_, maxNumber)) {
+    , computer_(createMeanComputer(numberDumper_, logger_, maxNumber)), isRunning_(false) {
 
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
@@ -63,9 +64,10 @@ TcpServer::TcpServer(short port, const std::string &logFilename,
     signals_.add(SIGINT);
     signals_.add(SIGTERM);
 #if defined(SIGQUIT)
-    //signals_.add(SIGQUIT);
+    signals_.add(SIGQUIT);
 #endif // defined(SIGQUIT)
-    signals_.async_wait(boost::bind(&Context::stop, &context_));
+
+    signals_.async_wait(boost::bind(&TcpServer::stop, this));
 
     loggerThread_ =
         std::make_shared<std::thread>(boost::bind(&Logger::run, logger_.get()));
@@ -74,22 +76,27 @@ TcpServer::TcpServer(short port, const std::string &logFilename,
 }
 
 TcpServer::~TcpServer() {
-    stop();
+    if (isRunning_)
+        stop();
 }
 
 void TcpServer::stop() {
+    isRunning_ = false;
+    signals_.cancel();
+    signals_.clear();
+
     if (!context_.stopped()) {
         context_.stop();
         logger_->print("Tcp Server stopped.");
     }
 
+    numberDumper_->stop();
+    logger_->stop();
+    
     if (acceptor_.is_open()) {
+        acceptor_.cancel();
         acceptor_.close();
     }
-
-    numberDumper_->stop();
-
-    waitForStop();
 }
 
 void TcpServer::waitForStop() {
