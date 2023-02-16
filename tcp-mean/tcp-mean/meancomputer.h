@@ -1,8 +1,8 @@
 #pragma once
 
 #include "icomputer.h"
-#include "numberdumper.h"
 #include "logger.h"
+#include "numberdumper.h"
 #include <shared_mutex>
 #include <vector>
 
@@ -10,12 +10,12 @@ class MeanComputer : public IComputer {
     // This class provides a mechanism for computation of mean of squares of
     // values received by server in a given range.
 
-    mutable std::shared_mutex numbersMutex_;
-    volatile double           mean_;
-    volatile uint32_t         numOfNumbers_;
-    volatile uint32_t         sumOfNumbers_;
-    uint32_t                  max_;
-    std::vector<bool>         numbers_;
+    mutable std::shared_mutex     numbersMutex_;
+    volatile double               mean_;
+    volatile uint32_t             numOfNumbers_;
+    volatile uint32_t             sumOfNumbers_;
+    uint32_t                      max_;
+    std::vector<bool>             numbers_;
     std::shared_ptr<NumberDumper> dumper_;
     std::shared_ptr<Logger>       logger_;
 
@@ -33,8 +33,8 @@ class MeanComputer : public IComputer {
   public:
     // Create 'MeanComputer' object with the optionally specified 'max' range
     // value.
-    MeanComputer(std::shared_ptr<NumberDumper>    dumper,
-                 std::shared_ptr<Logger>, uint32_t max = 1023);
+    MeanComputer(std::shared_ptr<NumberDumper> dumper, std::shared_ptr<Logger>,
+                 uint32_t                      max = 1023);
 
     // Update the mean with the specified 'value' if needed and return the
     // current mean value.

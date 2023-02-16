@@ -19,6 +19,7 @@ void Logger::processLogQueue() {
     }
 
     dumper_->push(currentLog);
+    std::cout << currentLog << std::endl;
 }
 
 void Logger::sheduleDumpRecurring() {

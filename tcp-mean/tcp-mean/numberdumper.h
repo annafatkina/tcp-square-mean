@@ -20,72 +20,31 @@ class NumberDumper : public std::enable_shared_from_this<NumberDumper> {
     int                         dumpPeriodSeconds_;
     boost::asio::deadline_timer dumpTimer_;
 
-    void dump() {
-        for (auto num : numbers_) {
-            outFile_ << num << " ";
-        }
-        outFile_ << std::endl;
-    }
+    // Dump data to file specified in ctor.
+    void dump();
 
-    void work() {
-        while (true) {
-            {
-                std::unique_lock<std::mutex> locker(numbersMutex_);
-                dumpCV_.wait(locker);
-                dump();
-            }
-            if (shutdown_) {
-                break;
-            }
-        }
-    }
+    // Wait for dump notification and dump number to file whet it happens.
+    void work();
 
-    void sheduleDumpRecurring() {
-        initNumberDumper();
-        auto self = shared_from_this();
-        dumpTimer_.expires_at(dumpTimer_.expires_at() +
-                              boost::posix_time::seconds(dumpPeriodSeconds_));
-        dumpTimer_.async_wait([self](const boost::system::error_code &) {
-            self->sheduleDumpRecurring();
-        });
-    }
+    // Schedule recurring dump once per period specified in ctor.
+    void sheduleDumpRecurring();
 
   public:
+    // Create 'NumberDumper' object with the specified 'io_context',
+    // 'dumpFilename' and 'dumpPeriodSeconds'.
     NumberDumper(boost::asio::io_context &io_context,
-                 const std::string &dumpFilename, int dumpPeriodSeconds)
-        : dumpFilename_(dumpFilename)
-        , dumpPeriodSeconds_(dumpPeriodSeconds)
-        , dumpTimer_(io_context,
-                     boost::posix_time::seconds(dumpPeriodSeconds)) {
-    }
+                 const std::string &dumpFilename, int dumpPeriodSeconds);
 
-    void start() {
-        if (!outFile_.is_open()) {
-            outFile_.open(dumpFilename_, std::ios::app | std::ios::binary);
-        }
+    // Start running dumper. Schedule dump task once per period specified in
+    // ctor.
+    void start();
 
-        auto self = shared_from_this();
-        dumpTimer_.async_wait([self](const boost::system::error_code &) {
-            self->sheduleDumpRecurring();
-        });
-        dumpThread_ = std::thread([self]() { self->work(); });
-    }
+    // Stor thid dumper.
+    void stop();
 
-    void stop() {
-        dumpCV_.notify_one();
-        dumpTimer_.cancel();
-        dumpThread_.join();
-        if (outFile_.is_open()) {
-            outFile_.close();
-        }
-    }
+    // Add the specified 'number' to a set of numbers received by server.
+    void push(uint32_t number);
 
-    void push(uint32_t number) {
-        std::unique_lock<std::mutex> locker(numbersMutex_);
-        numbers_.insert(number);
-    }
-
-    void initNumberDumper() {
-        dumpCV_.notify_one();
-    }
+    // Initialize dump process.
+    void initNumberDumper();
 };

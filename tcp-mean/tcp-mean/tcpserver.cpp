@@ -40,17 +40,22 @@ void TcpServer::run() {
     }
 }
 
-TcpServer::TcpServer(short port, SessionFactoryFunc sessionFactoryFunc)
+TcpServer::TcpServer(short port, const std::string &logFilename,
+                     const std::string &numbersDumpFilename, int maxNumber,
+                     SessionFactoryFunc sessionFactoryFunc)
     : context_()
     , signals_(context_)
     , acceptor_(context_, Tcp::endpoint(Tcp::v4(), port))
     , threads_()
     , sessionCounter_(0)
     , sessionFactory_(sessionFactoryFunc)
-    , numberDumper_(std::make_shared<NumberDumper>(context_, "numbers.txt", 2))
-    , num_threads_(std::thread::hardware_concurrency() > 2 ? std::thread::hardware_concurrency() - 2 : 1)
-    , logger_(std::make_shared<Logger>(context_, "temp.txt", 1)) 
-    , computer_(createMeanComputer(numberDumper_, logger_, 1023)) {
+    , numberDumper_(
+          std::make_shared<NumberDumper>(context_, numbersDumpFilename, 2))
+    , num_threads_(std::thread::hardware_concurrency() > 2
+                       ? std::thread::hardware_concurrency() - 2
+                       : 1)
+    , logger_(std::make_shared<Logger>(context_, logFilename, 1))
+    , computer_(createMeanComputer(numberDumper_, logger_, maxNumber)) {
 
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
@@ -58,7 +63,7 @@ TcpServer::TcpServer(short port, SessionFactoryFunc sessionFactoryFunc)
     signals_.add(SIGINT);
     signals_.add(SIGTERM);
 #if defined(SIGQUIT)
-    signals_.add(SIGQUIT);
+    //signals_.add(SIGQUIT);
 #endif // defined(SIGQUIT)
     signals_.async_wait(boost::bind(&Context::stop, &context_));
 

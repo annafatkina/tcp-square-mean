@@ -18,12 +18,12 @@ void MeanComputer::addAndRecompute(uint32_t value) {
 
     numOfNumbers_++;
     sumOfNumbers_ += value * value;
-    mean_ = (double)sumOfNumbers_ / (double)numOfNumbers_;
+    mean_ = sumOfNumbers_ / (double)numOfNumbers_;
 }
 
 void MeanComputer::addValue(uint32_t value) {
     std::shared_lock<std::shared_mutex> lock(numbersMutex_);
-    if (value >= numbers_.size()) {
+    if (value >= numbers_.size() || value < 0) {
         logger_->printWarning("Server received number ", value,
                               " which is greater than maximum defined value ",
                               numbers_.size(), ". Ignore this value. ");

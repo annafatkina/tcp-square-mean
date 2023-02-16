@@ -114,7 +114,7 @@ template <typename... Types> void Logger::print(Types... args) {
 
 template <typename... Types> void Logger::printError(Types... args) {
     std::string msg = toString(args...);
-    push("\033[1;31mERROR: " + msg + "\033[0m");
+    push("ERROR: " + msg);
 }
 
 template <typename... Types> void Logger::printWarning(Types... args) {
@@ -122,7 +122,7 @@ template <typename... Types> void Logger::printWarning(Types... args) {
         return;
     }
     std::string msg = toString(args...);
-    push("\033[1;33mWARNING: " + msg + "\033[0m");
+    push("WARNING: " + msg);
 }
 
 template <typename... Types> void Logger::printDebug(Types... args) {
@@ -131,5 +131,5 @@ template <typename... Types> void Logger::printDebug(Types... args) {
     }
 
     std::string msg = toString(args...);
-    push("\033[1;34mDEBUG: " + msg + "\033[0m");
+    push("DEBUG: " + msg);
 }

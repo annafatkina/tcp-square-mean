@@ -37,9 +37,11 @@ class TcpServer {
     void do_accept();
 
   public:
-    // Create 'TcpServer' object with the specified 'port' and
-    // 'sessionFactoryFunc'. Use 'Session' object creation function by default.
-    TcpServer(short              port,
+    // Create 'TcpServer' object with the specified 'port', 'logFilename',
+    // 'numbersDumpFilename' and 'sessionFactoryFunc'. Use 'Session' object
+    // creation function by default.
+    TcpServer(short port, const std::string &logFilename,
+              const std::string &numbersDumpFilename, int maxNumber = 1023,
               SessionFactoryFunc sessionFactoryFunc = &createSession);
 
     // Destroy this object.
