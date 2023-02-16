@@ -4,9 +4,14 @@
 #include "icomputer.h"
 #include "isession.h"
 #include "logger.h"
+#include "numberdumper.h"
 #include <boost/asio.hpp>
 
 class TcpServer {
+    // This class implements the server which accepts connections, run multiple
+    // threads and stores sessions.
+
+    // TYPES
     using Context            = boost::asio::io_context;
     using Signals            = boost::asio::signal_set;
     using Tcp                = boost::asio::ip::tcp;
@@ -15,16 +20,18 @@ class TcpServer {
         Context &io_context, Tcp::socket socket, int sessionId,
         std::shared_ptr<Logger> logger, std::shared_ptr<IComputer> computer)>;
 
+    // DATA
     Context                                   context_;
     Signals                                   signals_;
     Acceptor                                  acceptor_;
     SessionFactoryFunc                        sessionFactory_;
-    std::shared_ptr<IComputer>                computer_;
+    std::shared_ptr<NumberDumper>             numberDumper_;
     std::vector<std::shared_ptr<std::thread>> threads_;
     int                                       sessionCounter_;
     unsigned int                              num_threads_;
     std::shared_ptr<Logger>                   logger_;
     std::shared_ptr<std::thread>              loggerThread_;
+    std::shared_ptr<IComputer>                computer_;
 
     // Accept new connection
     void do_accept();

@@ -8,7 +8,7 @@
 #include <mutex>
 #include <string>
 
-#include "dumper.h"
+#include "logdumper.h"
 
 class Logger : public std::enable_shared_from_this<Logger> {
     enum class Level {
@@ -18,7 +18,7 @@ class Logger : public std::enable_shared_from_this<Logger> {
         ERR      // print errors only
     };
 
-    std::shared_ptr<Dumper>     dumper_;
+    std::shared_ptr<LogDumper>  dumper_;
     std::mutex                  logMsgQueueMutex_;
     std::deque<std::string>     logMsgQueue_;
     Level                       logLevel_;

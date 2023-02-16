@@ -1,6 +1,6 @@
-#include "dumper.h"
+#include "logdumper.h"
 
-void Dumper::work() {
+void LogDumper::work() {
     while (true) {
         auto self = shared_from_this();
 
@@ -19,43 +19,46 @@ void Dumper::work() {
     }
 }
 
-void Dumper::dump(std::deque<std::string> &dumpQueue) {
+void LogDumper::dump(std::deque<std::string> &dumpQueue) {
     if (dumpQueue.empty()) {
         return;
     }
 
-    std::ofstream outfile;
-    outfile.open(dumpFilename_, std::ios::app);
-
     while (!dumpQueue.empty()) {
-        outfile << dumpQueue.front() << std::endl;
+        outFile_ << dumpQueue.front() << std::endl;
         dumpQueue.pop_front();
     }
 
-    outfile.close();
 }
 
 // public
-Dumper::Dumper(const std::string &filename)
+LogDumper::LogDumper(const std::string &filename)
     : dumpFilename_(filename)
     , shutdown_(false) {
 }
 
-void Dumper::push(const std::string &string) {
+void LogDumper::push(const std::string &string) {
     std::unique_lock<std::mutex> locker(dumpMsgQueueMutex_);
     dumpMsgQueue_.emplace_back(string);
 }
 
-void Dumper::start() {
-    dumpThread_ = std::thread(std::bind(&Dumper::work, this));
+void LogDumper::start() {
+    if (!outFile_.is_open()) {
+        outFile_.open(dumpFilename_, std::ios::app);
+    }
+    auto self   = shared_from_this();
+    dumpThread_ = std::thread([self]() { self->work(); });
 }
 
-void Dumper::initDump() {
+void LogDumper::initDump() {
     dumpCV_.notify_one();
 }
 
-void Dumper::stop() {
+void LogDumper::stop() {
     shutdown_ = true;
     dumpCV_.notify_one();
     dumpThread_.join();
+    if (outFile_.is_open()) {
+        outFile_.close();
+    }
 }

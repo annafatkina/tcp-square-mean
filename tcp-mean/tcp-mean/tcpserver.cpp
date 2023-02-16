@@ -47,9 +47,10 @@ TcpServer::TcpServer(short port, SessionFactoryFunc sessionFactoryFunc)
     , threads_()
     , sessionCounter_(0)
     , sessionFactory_(sessionFactoryFunc)
-    , computer_(createMeanComputer(1023))
-    , num_threads_(std::thread::hardware_concurrency() - 1)
-    , logger_(std::make_shared<Logger>(context_, "temp.txt", 1)) {
+    , numberDumper_(std::make_shared<NumberDumper>(context_, "numbers.txt", 2))
+    , num_threads_(std::thread::hardware_concurrency() > 2 ? std::thread::hardware_concurrency() - 2 : 1)
+    , logger_(std::make_shared<Logger>(context_, "temp.txt", 1)) 
+    , computer_(createMeanComputer(numberDumper_, logger_, 1023)) {
 
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
@@ -63,6 +64,7 @@ TcpServer::TcpServer(short port, SessionFactoryFunc sessionFactoryFunc)
 
     loggerThread_ =
         std::make_shared<std::thread>(boost::bind(&Logger::run, logger_.get()));
+    numberDumper_->start();
     do_accept();
 }
 
@@ -79,6 +81,8 @@ void TcpServer::stop() {
     if (acceptor_.is_open()) {
         acceptor_.close();
     }
+
+    numberDumper_->stop();
 
     waitForStop();
 }

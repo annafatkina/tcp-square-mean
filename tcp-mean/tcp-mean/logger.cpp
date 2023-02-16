@@ -19,7 +19,6 @@ void Logger::processLogQueue() {
     }
 
     dumper_->push(currentLog);
-    std::cout << currentLog << std::endl;
 }
 
 void Logger::sheduleDumpRecurring() {
@@ -35,7 +34,7 @@ void Logger::sheduleDumpRecurring() {
 // public
 Logger::Logger(boost::asio::io_context &io_context, const std::string &filename,
                int dumpPeriodSeconds, Level level)
-    : dumper_(std::make_shared<Dumper>(filename))
+    : dumper_(std::make_shared<LogDumper>(filename))
     , logLevel_(level)
     , isRunning_(false)
     , dumpPeriodSeconds_(dumpPeriodSeconds)

@@ -8,8 +8,9 @@
 #include <mutex>
 #include <string>
 
-class Dumper : public std::enable_shared_from_this<Dumper> {
+class LogDumper : public std::enable_shared_from_this<LogDumper> {
     std::string             dumpFilename_;
+    std::ofstream           outFile_;
     std::thread             dumpThread_;
     std::mutex              dumpMsgQueueMutex_;
     std::condition_variable dumpCV_;
@@ -26,11 +27,11 @@ class Dumper : public std::enable_shared_from_this<Dumper> {
 
   public:
     // NOT IMPLEMENTED
-    Dumper(const Dumper &) = delete;
-    Dumper(Dumper &&)      = delete;
+    LogDumper(const LogDumper &) = delete;
+    LogDumper(LogDumper &&)      = delete;
 
-    // Create 'Dumper' onject with the specified dump file 'filename'.
-    Dumper(const std::string &filename);
+    // Create 'LogDumper' onject with the specified dump file 'filename'.
+    LogDumper(const std::string &filename);
 
     // Push the specified 'string' into dump queue.
     void push(const std::string &string);
