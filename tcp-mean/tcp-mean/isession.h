@@ -14,7 +14,7 @@ class ISession : public std::enable_shared_from_this<ISession> {
     using Context = boost::asio::io_context;
 
   protected:
-    int sessionId_;
+    int                     sessionId_;
     std::shared_ptr<Logger> logger_;
 
     // Read data from the socket and schedule the callback to be called after
@@ -29,8 +29,10 @@ class ISession : public std::enable_shared_from_this<ISession> {
 
   public:
     // Create object with the specified 'sessionId'.
-      ISession(int sessionId, std::shared_ptr<Logger> logger)
-        : sessionId_(sessionId), logger_(logger) {}
+    ISession(int sessionId, std::shared_ptr<Logger> logger)
+        : sessionId_(sessionId)
+        , logger_(logger) {
+    }
 
     // Destroy this object.
     virtual ~ISession() = default;
@@ -43,8 +45,8 @@ class ISession : public std::enable_shared_from_this<ISession> {
 // Return shared ptr to the created session.
 std::shared_ptr<ISession> createSession(boost::asio::io_context &    io_context,
                                         boost::asio::ip::tcp::socket socket,
-                                        int                          sessionId, 
-    std::shared_ptr<Logger> logger,
-    std::shared_ptr<IComputer> computer);
+                                        int                          sessionId,
+                                        std::shared_ptr<Logger>      logger,
+                                        std::shared_ptr<IComputer>   computer);
 
-#endif   // ISESSION_H
+#endif // ISESSION_H

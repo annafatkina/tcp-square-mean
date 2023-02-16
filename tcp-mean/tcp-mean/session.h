@@ -16,10 +16,10 @@ class Session : public ISession {
 
     // DATA
     std::shared_ptr<IComputer> computer_;
-    Context::strand          rwStrand_;
-    Tcp::socket              socket_;
-    boost::asio::streambuf   rBuffer_;
-    boost::asio::streambuf   wBuffer_;
+    Context::strand            rwStrand_;
+    Tcp::socket                socket_;
+    boost::asio::streambuf     rBuffer_;
+    boost::asio::streambuf     wBuffer_;
 
   protected:
     // Return data read from buffer.
@@ -41,7 +41,8 @@ class Session : public ISession {
   public:
     // Create 'Session' object with the specified 'io_context', 'socket' and
     // 'sessionId'.
-    Session(Context &io_context, Tcp::socket socket, int sessionId, std::shared_ptr<Logger> logger,
+    Session(Context &io_context, Tcp::socket socket, int sessionId,
+            std::shared_ptr<Logger>    logger,
             std::shared_ptr<IComputer> computer);
 
     // Destroy this object.
@@ -51,4 +52,4 @@ class Session : public ISession {
     void start() override;
 };
 
-#endif   // SESSION_H
+#endif // SESSION_H

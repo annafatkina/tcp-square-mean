@@ -1,8 +1,8 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
-#include "isession.h"
 #include "icomputer.h"
+#include "isession.h"
 #include "logger.h"
 #include <boost/asio.hpp>
 
@@ -12,7 +12,8 @@ class TcpServer {
     using Tcp                = boost::asio::ip::tcp;
     using Acceptor           = Tcp::acceptor;
     using SessionFactoryFunc = std::function<std::shared_ptr<ISession>(
-        Context& io_context, Tcp::socket socket, int sessionId, std::shared_ptr<Logger> logger, std::shared_ptr<IComputer> computer)>;
+        Context &io_context, Tcp::socket socket, int sessionId,
+        std::shared_ptr<Logger> logger, std::shared_ptr<IComputer> computer)>;
 
     Context                                   context_;
     Signals                                   signals_;
@@ -22,8 +23,8 @@ class TcpServer {
     std::vector<std::shared_ptr<std::thread>> threads_;
     int                                       sessionCounter_;
     unsigned int                              num_threads_;
-    std::shared_ptr<Logger> logger_;
-    std::shared_ptr<std::thread> loggerThread_;
+    std::shared_ptr<Logger>                   logger_;
+    std::shared_ptr<std::thread>              loggerThread_;
 
     // Accept new connection
     void do_accept();
@@ -47,4 +48,4 @@ class TcpServer {
     void run();
 };
 
-#endif   // TCPSERVER_H
+#endif // TCPSERVER_H

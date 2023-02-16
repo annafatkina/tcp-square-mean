@@ -1,9 +1,9 @@
 #include "dumper.h"
 
-void Dumper::work()
-{
+void Dumper::work() {
     while (true) {
         auto self = shared_from_this();
+
         std::deque<std::string> tempQueue;
         {
             std::unique_lock<std::mutex> locker(dumpMsgQueueMutex_);
@@ -19,8 +19,7 @@ void Dumper::work()
     }
 }
 
-void Dumper::dump(std::deque<std::string>& dumpQueue)
-{
+void Dumper::dump(std::deque<std::string> &dumpQueue) {
     if (dumpQueue.empty()) {
         return;
     }
@@ -37,31 +36,25 @@ void Dumper::dump(std::deque<std::string>& dumpQueue)
 }
 
 // public
-Dumper::Dumper(const std::string& filename)
+Dumper::Dumper(const std::string &filename)
     : dumpFilename_(filename)
-    , shutdown_(false)
-{
+    , shutdown_(false) {
 }
 
-void Dumper::push(const std::string& string)
-{
+void Dumper::push(const std::string &string) {
     std::unique_lock<std::mutex> locker(dumpMsgQueueMutex_);
     dumpMsgQueue_.emplace_back(string);
 }
 
-void Dumper::start()
-{
-    dumpThread_ = std::thread(
-        std::bind(&Dumper::work, this));
+void Dumper::start() {
+    dumpThread_ = std::thread(std::bind(&Dumper::work, this));
 }
 
-void Dumper::initDump()
-{
+void Dumper::initDump() {
     dumpCV_.notify_one();
 }
 
-void Dumper::stop()
-{
+void Dumper::stop() {
     shutdown_ = true;
     dumpCV_.notify_one();
     dumpThread_.join();
