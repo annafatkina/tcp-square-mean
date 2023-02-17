@@ -19,7 +19,9 @@ The default level set in the server is `INFO`.
 
 ## How to build
 
+Build it with Visual Studio. There is a solution file: `tcp-mean/tcp-mean.sln`.
 
+Dependency: Boost.
 
 ## How to run 
 
