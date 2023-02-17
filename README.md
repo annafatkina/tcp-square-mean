@@ -22,6 +22,7 @@ The default level set in the server is `INFO`.
 Build it with Visual Studio. There is a solution file: `tcp-mean/tcp-mean.sln`.
 
 Dependency: Boost.
+`Boost_DIR` should be installed
 
 ## How to run 
 
