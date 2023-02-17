@@ -1,6 +1,23 @@
 # tcp-square-mean
 
-TCP server which calculates an avg of squares of recieved numbers. Both server and client print logs to cmd and to their log files. Server also dumps numbers already received from clients to a dump file periodically.
+TCP server which calculates an avg of squares of recieved numbers. 
+For every new client connection server creates a new `Session`, they are 
+processed in multiple threads if it's possible on current machiene. 
+Both server and client print logs to cmd and to their log files. 
+Server also dumps numbers already received from clients to a dump 
+file periodically in a separate thread. Server logger runs in a separate thread as well.
+
+
+There are different log levels:
+
+* Err - print error level logs only,
+* Warnong - print errors and warnings,
+* Info - print errors, warnings and info logs,
+* All - print all the logs, including debug level logs.
+
+The default level set in the server is `INFO`.
+
+
 
 ## How to run 
 
