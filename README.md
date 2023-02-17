@@ -11,11 +11,13 @@ file periodically in a separate thread. Server logger runs in a separate thread 
 There are different log levels:
 
 * Err - print error level logs only,
-* Warnong - print errors and warnings,
+* Warning - print errors and warnings,
 * Info - print errors, warnings and info logs,
 * All - print all the logs, including debug level logs.
 
 The default level set in the server is `INFO`.
+
+## How to build
 
 
 
