@@ -24,8 +24,6 @@ void LogDumper::dump(std::deque<std::string> &dumpQueue) {
         return;
     }
 
-    std::cout << dumpQueue.size() << std::endl;
-
     if (!outFile_.is_open()) {
         outFile_.open(dumpFilename_, std::ios::app);
     }
