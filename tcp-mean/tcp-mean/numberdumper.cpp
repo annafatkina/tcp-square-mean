@@ -39,6 +39,10 @@ NumberDumper::NumberDumper(boost::asio::io_context &io_context,
     , dumpTimer_(io_context, boost::posix_time::seconds(dumpPeriodSeconds)) {
 }
 
+NumberDumper::~NumberDumper() {
+    stop();
+}
+
 void NumberDumper::start() {
     if (!outFile_.is_open()) {
         outFile_.open(dumpFilename_, std::ios::app | std::ios::binary);
@@ -52,6 +56,10 @@ void NumberDumper::start() {
 }
 
 void NumberDumper::stop() {
+    if (shutdown_) {
+        return;
+    }
+
     shutdown_ = true;
     dumpCV_.notify_one();
     dumpTimer_.cancel();

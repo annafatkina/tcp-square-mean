@@ -57,7 +57,10 @@ class Logger : public std::enable_shared_from_this<Logger> {
 
     // Create 'Logger' object with the 'dumpFilename' and log 'level'.
     Logger(boost::asio::io_context &io_context, const std::string &dumpFilename,
-           int dumpPeriodSeconds, Level level = Level::ALL);
+           int dumpPeriodSeconds, Level level = Level::INFO);
+
+    // Destroy this object.
+    ~Logger();
 
     // Start processing logger queue.
     void run();

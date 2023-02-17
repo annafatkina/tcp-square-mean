@@ -11,9 +11,9 @@ class MeanComputer : public IComputer {
     // values received by server in a given range.
 
     mutable std::shared_mutex     numbersMutex_;
-    volatile double               mean_;
-    volatile uint32_t             numOfNumbers_;
-    volatile uint32_t             sumOfNumbers_;
+    double                        mean_;
+    uint32_t                      numOfNumbers_;
+    double                        sumOfNumbers_;
     uint32_t                      max_;
     std::vector<bool>             numbers_;
     std::shared_ptr<NumberDumper> dumper_;
@@ -28,9 +28,13 @@ class MeanComputer : public IComputer {
     void addValue(uint32_t value);
 
     // Get current mean value.
-    uint32_t getMean();
+    double getMean();
 
   public:
+    // NOT IMPLEMENTED
+    MeanComputer(const MeanComputer &) = delete;
+    MeanComputer(MeanComputer &&)      = delete;
+
     // Create 'MeanComputer' object with the optionally specified 'max' range
     // value.
     MeanComputer(std::shared_ptr<NumberDumper> dumper, std::shared_ptr<Logger>,

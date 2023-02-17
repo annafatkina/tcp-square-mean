@@ -39,8 +39,12 @@ class Session : public ISession {
     void handle() override;
 
   public:
-    // Create 'Session' object with the specified 'io_context', 'socket' and
-    // 'sessionId'.
+    // NOT IMPLEMENTED
+    Session(const Session &) = delete;
+    Session(Session &&)      = delete;
+
+    // Create 'Session' object with the specified 'io_context', 'socket',
+    // 'sessionId', 'logger', and 'computer'.
     Session(Context &io_context, Tcp::socket socket, int sessionId,
             std::shared_ptr<Logger>    logger,
             std::shared_ptr<IComputer> computer);

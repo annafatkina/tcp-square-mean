@@ -24,7 +24,10 @@ if not isExist:
    os.makedirs(logfolder)
 
 # Run the server
-subprocess.Popen(args = [server, port, logfolder + args.logserver, logfolder + args.dumpfile, args.maxnumber])
+#subprocess.Popen(args = [server, port, logfolder + args.logserver, logfolder + args.dumpfile, args.maxnumber])
+subprocess.Popen(args = ["start", "cmd", "/k", server, port, logfolder + args.logserver, logfolder + args.dumpfile, args.maxnumber], shell=True)
+
+#os.system("start /wait cmd /c {server} {port} {logfolder + args.logserver} {logfolder + args.dumpfile} {args.maxnumber}")
 
 for i in range(9):
     # Run some clients

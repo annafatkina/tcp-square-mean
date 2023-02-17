@@ -36,7 +36,7 @@ void MeanComputer::addValue(uint32_t value) {
     }
 }
 
-uint32_t MeanComputer::getMean() {
+double MeanComputer::getMean() {
     std::shared_lock<std::shared_mutex> lock(numbersMutex_);
     return mean_;
 }

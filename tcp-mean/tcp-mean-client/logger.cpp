@@ -4,6 +4,10 @@ Logger::Logger(const std::string &filename)
     : filename_(filename) {
 }
 
+Logger::~Logger() {
+    stop();
+}
+
 void Logger::run() {
     if (!outFile_.is_open()) {
         outFile_.open(filename_, std::ios::app);

@@ -30,10 +30,16 @@ class Client {
     void recv();
 
   public:
+    // NOT IMPLEMENTED
+    Client(const Client &) = delete;
+    Client(Client &&)      = delete;
+
     // Create 'Client' object with the specified 'host', 'port', 'logFilename'
     // and 'maxNumber'.
     Client(const std::string &host, const std::string &port,
            const std::string logFilename, int maxNumber);
+
+    ~Client();
 
     // Run the client, connect it to the server with hostname and port specified
     // in ctor. Start sending random numbers to the server, wait for the answer

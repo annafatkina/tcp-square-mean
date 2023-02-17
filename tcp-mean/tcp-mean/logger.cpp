@@ -43,6 +43,10 @@ Logger::Logger(boost::asio::io_context &io_context, const std::string &filename,
     dumper_->start();
 }
 
+Logger::~Logger() {
+    stop();
+}
+
 void Logger::run() {
     isRunning_ = true;
 
@@ -63,6 +67,9 @@ void Logger::run() {
 }
 
 void Logger::stop() {
+    if (~isRunning_) {
+        return;
+    }
     isRunning_ = false;
     dumpTimer_.cancel();
     dumper_->stop();

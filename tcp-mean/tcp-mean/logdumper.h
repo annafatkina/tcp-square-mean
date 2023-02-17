@@ -33,6 +33,9 @@ class LogDumper : public std::enable_shared_from_this<LogDumper> {
     // Create 'LogDumper' onject with the specified dump file 'filename'.
     LogDumper(const std::string &filename);
 
+    // Destroy this object.
+    ~LogDumper();
+
     // Push the specified 'string' into dump queue.
     void push(const std::string &string);
 

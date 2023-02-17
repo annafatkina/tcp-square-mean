@@ -30,10 +30,17 @@ class NumberDumper : public std::enable_shared_from_this<NumberDumper> {
     void sheduleDumpRecurring();
 
   public:
+      // NOT IMPLEMENTED
+    NumberDumper(const NumberDumper &) = delete;
+    NumberDumper(NumberDumper &&)      = delete;
+
     // Create 'NumberDumper' object with the specified 'io_context',
     // 'dumpFilename' and 'dumpPeriodSeconds'.
     NumberDumper(boost::asio::io_context &io_context,
                  const std::string &dumpFilename, int dumpPeriodSeconds);
+
+    // Destroy this object.
+    ~NumberDumper();
 
     // Start running dumper. Schedule dump task once per period specified in
     // ctor.

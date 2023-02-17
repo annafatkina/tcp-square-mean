@@ -1,6 +1,7 @@
 #include "client.h"
 #include <boost/bind.hpp>
 #include <boost/random.hpp>
+#include <chrono>
 #include <string>
 
 void Client::send(int number) {
@@ -44,15 +45,22 @@ Client::Client(const std::string &host, const std::string &port,
     logger_.run();
 }
 
+Client::~Client() {
+    stop();
+}
+
 void Client::run() {
     logger_.print("Run the client.");
     boost::asio::connect(socket_, resolver_.resolve(host_, port_));
     logger_.run();
     isRunnting_ = true;
     while (isRunnting_) {
-        boost::random::mt19937                    rng;
-        boost::random::uniform_int_distribution<> gen(0, maxNumber_);
-        int                                       randNum = gen(rng);
+        using namespace std::chrono;
+        auto time =
+            duration_cast<microseconds>(system_clock::now().time_since_epoch())
+                .count();
+        boost::random::mt19937 gen{static_cast<std::uint32_t>(time)};
+        int                    randNum = gen() % maxNumber_;
         try {
             send(randNum);
         } catch (const std::exception &e) {
@@ -72,7 +80,15 @@ void Client::run() {
 }
 
 void Client::stop() {
+    if (!isRunnting_) {
+        return;
+    }
+
     logger_.print("Shutdown the client.");
     isRunnting_ = false;
     logger_.stop();
+    if (!io_context_.stopped()) {
+        io_context_.stop();
+    }
+    signals_.cancel();
 }

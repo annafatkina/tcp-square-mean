@@ -24,11 +24,18 @@ void LogDumper::dump(std::deque<std::string> &dumpQueue) {
         return;
     }
 
+    std::cout << dumpQueue.size() << std::endl;
+
+    if (!outFile_.is_open()) {
+        outFile_.open(dumpFilename_, std::ios::app);
+    }
     while (!dumpQueue.empty()) {
         outFile_ << dumpQueue.front() << std::endl;
         dumpQueue.pop_front();
     }
-
+    if (outFile_.is_open()) {
+        outFile_.close();
+    }
 }
 
 // public
@@ -37,15 +44,17 @@ LogDumper::LogDumper(const std::string &filename)
     , shutdown_(false) {
 }
 
+LogDumper::~LogDumper() {
+    stop();
+}
+
 void LogDumper::push(const std::string &string) {
     std::unique_lock<std::mutex> locker(dumpMsgQueueMutex_);
     dumpMsgQueue_.emplace_back(string);
 }
 
 void LogDumper::start() {
-    if (!outFile_.is_open()) {
-        outFile_.open(dumpFilename_, std::ios::app);
-    }
+
     auto self   = shared_from_this();
     dumpThread_ = std::thread([self]() { self->work(); });
 }
@@ -55,10 +64,11 @@ void LogDumper::initDump() {
 }
 
 void LogDumper::stop() {
+    if (shutdown_) {
+        return;
+    }
+
     shutdown_ = true;
     dumpCV_.notify_one();
     dumpThread_.join();
-    if (outFile_.is_open()) {
-        outFile_.close();
-    }
 }

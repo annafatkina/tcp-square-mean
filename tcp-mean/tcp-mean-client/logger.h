@@ -11,8 +11,15 @@ class Logger {
     std::ofstream outFile_;
 
   public:
+    // NOT IMPLEMENTED
+    Logger(const Logger &) = delete;
+    Logger(Logger &&)      = delete;
+    
     // Create 'Logger' object with the specified log 'filename'.
     Logger(const std::string &filename);
+
+    // Destroy this object.
+    ~Logger();
 
     // Run the logger, open log file.
     void run();
